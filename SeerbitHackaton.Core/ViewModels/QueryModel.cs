@@ -1,5 +1,7 @@
 ﻿
 
+using static SeerbitHackaton.Core.Utils.CoreConstants;
+
 namespace SeerbitHackaton.Core.ViewModels
 {
     public class QueryModel : PagedRequestModel

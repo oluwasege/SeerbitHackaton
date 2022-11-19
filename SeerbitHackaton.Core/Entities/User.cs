@@ -5,8 +5,7 @@ namespace SeerbitHackaton.Core.Entities
     public class User : IdentityUser<long>, IHasCreationTime, IHasDeletionTime, ISoftDelete, IHasModificationTime
     {
         public string FirstName { get; set; }
-        public string Unit { get; set; }
-        public string MiddleName { get; set; }
+        public string? MiddleName { get; set; }
         public string LastName { get; set; }
         public bool IsFirstTimeLogin { get; set; } = true;
         public DateTime CreationTime { get; set; }

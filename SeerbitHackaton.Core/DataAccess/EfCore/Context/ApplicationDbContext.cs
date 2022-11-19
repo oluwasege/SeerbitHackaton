@@ -1,4 +1,5 @@
 ﻿global using System.Reflection;
+using SeerbitHackaton.Core.Entities;
 
 namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
 {
@@ -7,6 +8,7 @@ namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
     /// </Note>
     public class ApplicationDbContext : BaseDbContext
     {
+        public DbSet<State> States { get; set; }
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }

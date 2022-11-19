@@ -1,4 +1,6 @@
-﻿namespace SeerbitHackaton.Core.FileStorage
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace SeerbitHackaton.Core.FileStorage
 {
     public class FileStorageService : IFileStorageService
     {
@@ -351,7 +353,7 @@
         {
             foreach (var filePath in filePaths)
             {
-                if (!filePath.IsNullOrWhiteSpace()) 
+                if (!filePath.IsNullOrEmpty()) 
                     DeleteFile(filePath);
             }
 

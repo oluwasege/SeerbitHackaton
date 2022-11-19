@@ -9,6 +9,7 @@ global using SeerbitHackaton.Core.Timing;
 global using SeerbitHackaton.Core.Entities;
 global using SeerbitHackaton.Core.Entities.Common;
 global using SeerbitHackaton.Core.Entities.Auditing;
+using SeerbitHackaton.Core.Extensions;
 
 namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
 {

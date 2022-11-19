@@ -1,4 +1,6 @@
-﻿namespace SeerbitHackaton.Core.DataAccess.EfCore
+﻿using SeerbitHackaton.Core.Extensions;
+
+namespace SeerbitHackaton.Core.DataAccess.EfCore
 {
     public static class EntityAuditingHelper
     {
