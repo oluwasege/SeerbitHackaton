@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeerbitHackaton.API", "SeerbitHackaton.API\SeerbitHackaton.API.csproj", "{1EA735D8-5A21-4783-84F8-83B8C7F5229C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeerbitHackaton.API", "SeerbitHackaton.API\SeerbitHackaton.API.csproj", "{1EA735D8-5A21-4783-84F8-83B8C7F5229C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeerbitHackaton.Core", "SeerbitHackaton.Core\SeerbitHackaton.Core.csproj", "{BF58E69D-3AC2-4DD1-9941-83A255E721BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeerbitHackaton.Core", "SeerbitHackaton.Core\SeerbitHackaton.Core.csproj", "{BF58E69D-3AC2-4DD1-9941-83A255E721BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeerbitHackaton.Services", "SeerbitHackaton.Services\SeerbitHackaton.Services.csproj", "{75280EF1-91F8-4563-B823-F6E7EA88F210}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{BF58E69D-3AC2-4DD1-9941-83A255E721BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF58E69D-3AC2-4DD1-9941-83A255E721BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF58E69D-3AC2-4DD1-9941-83A255E721BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75280EF1-91F8-4563-B823-F6E7EA88F210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75280EF1-91F8-4563-B823-F6E7EA88F210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75280EF1-91F8-4563-B823-F6E7EA88F210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75280EF1-91F8-4563-B823-F6E7EA88F210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

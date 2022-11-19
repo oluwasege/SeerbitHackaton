@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SeerbitHackaton.Core.Utils
 {
-    public class JwtSettings
+    public class JWT
     {
-        public string Site { get; set; }
+        public string Key { get; set; }
+        public string Issuer { get; set; }
         public string Audience { get; set; }
-        public string DurationInMinutes { get; set; }
-        public string SecretKey { get; set; }
+        public double DurationInDays { get; set; }
     }
 }

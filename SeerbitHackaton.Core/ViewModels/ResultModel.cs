@@ -70,5 +70,9 @@ namespace SeerbitHackaton.Core.ViewModels
         {
             ValidationErrors.AddRange(validationResults);
         }
+        public List<string> GetErrorMessages()
+        {
+            return ValidationErrors.Select(c => c.ErrorMessage).ToList();
+        }
     }
 }

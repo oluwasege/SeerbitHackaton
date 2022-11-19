@@ -14,6 +14,8 @@ using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using System;
+using SeerbitHackaton.Services.Interfaces;
+using SeerbitHackaton.Services;
 
 namespace SeerbitHackaton.API
 {
@@ -78,44 +80,30 @@ namespace SeerbitHackaton.API
 
         public static void AddSettingsAndAuthentication(this IServiceCollection services, IConfiguration Configuration)
         {
-
-            //set JWT
-            var JwtSettingsSection = Configuration.GetSection(nameof(JwtSettings));
-            services.Configure<JwtSettings>(JwtSettingsSection);
-
-            var jwtSettings = JwtSettingsSection.Get<JwtSettings>();
-
-            //Encode Secret Key
-            var secretKey = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
-
-            //Add jwt authentication
+            //Adding Athentication - JWT
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-             {
-                 options.SaveToken = true;
-                 options.RequireHttpsMetadata = true;
-                 options.TokenValidationParameters = new TokenValidationParameters
-                 {
-                     ValidateAudience = true,
-                     ValidateIssuer = true,
-                     ValidateIssuerSigningKey = false,
-                     ValidateLifetime = true,
-                     ValidIssuer = jwtSettings.Site,
-                     //ValidAudience = jwtSettings.Audience,
-                     IssuerSigningKey = new SymmetricSecurityKey(secretKey),
-                     RequireExpirationTime = true,
-                     ClockSkew = TimeSpan.Zero
-                 };
-             });
 
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false;
+                    o.SaveToken = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
 
-
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                    };
+                });
         }
 
         public static void AddServices(this IServiceCollection services, IWebHostEnvironment HostingEnvironment, IConfiguration Configuration)
@@ -134,6 +122,7 @@ namespace SeerbitHackaton.API
                           HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath"))));
 
             services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
         }
 
     }

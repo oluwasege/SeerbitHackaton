@@ -25,11 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SeerbitHackaton.Core\SeerbitHackaton.Core.csproj" />
+    <ProjectReference Include="..\SeerbitHackaton.Services\SeerbitHackaton.Services.csproj" />
   </ItemGroup>
 
 </Project>
