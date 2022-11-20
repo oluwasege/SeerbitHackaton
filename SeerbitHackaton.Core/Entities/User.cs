@@ -15,7 +15,9 @@ namespace SeerbitHackaton.Core.Entities
         public DateTime? LastLoginDate { get; set; }
         public UserType UserType { get; set; }
         public UserStatus UserStatus { get; set; }
-
+        public bool IsSuperAdmin { get; set; }
+        public bool IsCompanyAdmin { get; set; }
+        public bool IsEmployee { get; set; }
         [NotMapped]
         public string FullName
         {
@@ -24,6 +26,10 @@ namespace SeerbitHackaton.Core.Entities
                 return $"{LastName} {FirstName}";
             }
         }
+
+        public Gender Gender { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public List<RefreshToken> RefreshTokens { get; set; }
     }
 
     public class UserClaim : IdentityUserClaim<long> { }

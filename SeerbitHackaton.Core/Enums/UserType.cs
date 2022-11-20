@@ -2,7 +2,7 @@
 {
     public enum UserType
     {
-        GlobalAdmin = 1,
+        SuperAdmin = 1,
         CompanyAdmin,
         Employee
     }

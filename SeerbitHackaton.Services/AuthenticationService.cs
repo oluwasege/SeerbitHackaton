@@ -7,6 +7,7 @@ using SeerbitHackaton.Core.DataAccess.EfCore.Context;
 using SeerbitHackaton.Core.Entities;
 using SeerbitHackaton.Core.Enums;
 using SeerbitHackaton.Core.Utils;
+using Shared.Pagination;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -45,14 +46,6 @@ namespace SeerbitHackaton.Services
                 if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
                 {
                     var response = await _userManager.IsEmailConfirmedAsync(user);
-
-                    //if (response == false)
-                    //{
-                    //    if(user.Activated==false)
-                    //    { }
-                    //    resultModel.AddError("Email not confirmed!");
-                    //    return resultModel;
-                    //}
                     if (user.UserStatus == UserStatus.Deactivated || response == false)
                     {
                         resultModel.AddError("You have to confirm your email and change your password");
@@ -61,7 +54,7 @@ namespace SeerbitHackaton.Services
                     var userRoles = await _userManager.GetRolesAsync(user);
                     var (token, expiration) = CreateJwtTokenAsync(user, userRoles);
 
-                    //await UpdateUserLastLogin(user.Email, currentDate, false);
+                    await UpdateUserLastLogin(user.Email, currentDate, false);
 
                     var data = new LoginResponseVM()
                     {
@@ -70,23 +63,23 @@ namespace SeerbitHackaton.Services
                         Roles = userRoles,
                     };
 
-                    //if (user.RefreshTokens.Any(a => a.IsActive))
-                    //{
-                    //    var activeRefreshToken = user.RefreshTokens
-                    //        .Where(a => a.IsActive == true)
-                    //        .FirstOrDefault();
-                    //    // authenticationModel.RefreshToken = activeRefreshToken.Token;
-                    //    // authenticationModel.RefreshTokenExpiration = activeRefreshToken.Expires;
-                    //}
-                    //else
-                    //{
-                    //    var refreshToken = CreateRefreshToken(currentDate);
-                    //    //authenticationModel.RefreshToken = refreshToken.Token;
-                    //    //authenticationModel.RefreshTokenExpiration = refreshToken.Expires;
-                    //    user.RefreshTokens.Add(refreshToken);
-                    //    _context.Update(user);
-                    //    _context.SaveChanges();
-                    //}
+                    if (user.RefreshTokens.Any(a => a.IsActive))
+                    {
+                        var activeRefreshToken = user.RefreshTokens
+                            .Where(a => a.IsActive == true)
+                            .FirstOrDefault();
+                        // authenticationModel.RefreshToken = activeRefreshToken.Token;
+                        // authenticationModel.RefreshTokenExpiration = activeRefreshToken.Expires;
+                    }
+                    else
+                    {
+                        var refreshToken = CreateRefreshToken(currentDate);
+                        //authenticationModel.RefreshToken = refreshToken.Token;
+                        //authenticationModel.RefreshTokenExpiration = refreshToken.Expires;
+                        user.RefreshTokens.Add(refreshToken);
+                        _context.Update(user);
+                        _context.SaveChanges();
+                    }
 
 
                     var recipients = new List<string>
@@ -135,9 +128,9 @@ namespace SeerbitHackaton.Services
                 new Claim("LastLoginDate", user.LastLoginDate == null ? "Not set" : user.LastLoginDate.ToString()),
                 new Claim("FirstName", user.FirstName?.ToString()),
                 new Claim("LastName", user.LastName?.ToString()),
-                //new Claim("IsAdmin", user.IsAdmin ? "True" : "False"),
-                //new Claim("IsCSO", user.IsCSO ? "True" : "False"),
-                //new Claim("IsSupervisor", user.IsSupervisor ? "True" : "False"),
+              new Claim("IsSuperAdmin", user.IsSuperAdmin ? "True" : "False"),
+                new Claim("IsCompanyAdmin", user.IsCompanyAdmin ? "True" : "False"),
+                new Claim("IsEmployee", user.IsEmployee ? "True" : "False")
             };
 
             foreach (var userRole in userRoles)
@@ -164,10 +157,10 @@ namespace SeerbitHackaton.Services
                 var user = await GetUser(model.EmailAddress);
                 if (user == null)
                 {
-                    resultModel.AddError(ErrorConstants.IncorrectUserOrPass);
+                    resultModel.AddError("Incorrect username or password");
                     return resultModel;
                 }
-                if (user.Activated == true)
+                if (user.UserStatus == UserStatus.Activated)
                 {
                     resultModel.AddError("Account already activated");
                     return resultModel;
@@ -266,13 +259,13 @@ namespace SeerbitHackaton.Services
 
                 if (user == null)
                 {
-                    result.AddError(ErrorConstants.IncorrectUserOrPass);
+                    result.AddError("Incoorrect username or password");
                     result.Data = false;
                     return result;
                 };
 
                 if (activated == true)
-                    user.Activated = true;
+                    user.UserStatus = UserStatus.Activated;
                 user.LastLoginDate = CurrentDate;
                 await _context.SaveChangesAsync();
 
@@ -285,44 +278,6 @@ namespace SeerbitHackaton.Services
                 result.AddError(ex.Message);
                 return result;
             }
-        }
-        private (string, DateTime) CreateJwtTokenAsync(DCIUser user, IList<string> userRoles)
-        {
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT:Key"]);
-
-            IdentityOptions identityOptions = new IdentityOptions();
-
-            var userClaims = new List<Claim>()
-            {
-                new Claim(identityOptions.ClaimsIdentity.UserIdClaimType, user.Id.ToString()),
-                new Claim(identityOptions.ClaimsIdentity.UserNameClaimType, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id.ToString()),
-                new Claim("LastLoginDate", user.LastLoginDate == null ? "Not set" : user.LastLoginDate.ToString()),
-                new Claim("FirstName", user.FirstName?.ToString()),
-                new Claim("LastName", user.LastName?.ToString()),
-                new Claim("IsAdmin", user.IsAdmin ? "True" : "False"),
-                new Claim("IsCSO", user.IsCSO ? "True" : "False"),
-                new Claim("IsSupervisor", user.IsSupervisor ? "True" : "False"),
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                userClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var signKey = new SymmetricSecurityKey(key);
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _configuration.GetSection("JWT:Issuer").Value,
-                audience: _configuration.GetSection("JWT:Audience").Value,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(_configuration.GetSection("JWT:DurationInMinutes").Value)),
-                claims: userClaims, signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256));
-
-            return (new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken), jwtSecurityToken.ValidTo);
         }
         public async Task<ResultModel<bool>> InviteUser(RegisterUserVM model)
         {
@@ -348,7 +303,7 @@ namespace SeerbitHackaton.Services
                     return result;
                 }
 
-                var user = new DCIUser
+                var user = new User
                 {
                     FirstName = model.FirstName,
                     Email = model.Email,
@@ -356,24 +311,24 @@ namespace SeerbitHackaton.Services
                     LastName = model.LastName,
                     UserName = model.Email.ToLower(),
                     EmailConfirmed = false,
-                    Activated = false,
+                    UserStatus = UserStatus.Deactivated,
                     PhoneNumber = model.PhoneNumber,
                     Gender = model.Gender,
-                    State = model.State,
+                    //State = model.State,
                 };
                 switch (role.Name)
                 {
-                    case AppRoles.AdminRole:
-                        user.UserType = UserTypes.Admin;
-                        user.IsAdmin = true;
+                    case AppRoles.SuperAdmin:
+                        user.UserType = UserType.SuperAdmin;
+                        user.IsSuperAdmin = true;
                         break;
-                    case AppRoles.SupervisorRole:
-                        user.UserType = UserTypes.Supervisor;
-                        user.IsSupervisor = true;
+                    case AppRoles.CompanyAdmin:
+                        user.UserType = UserType.CompanyAdmin;
+                        user.IsCompanyAdmin = true;
                         break;
-                    case AppRoles.CSORole:
-                        user.UserType = UserTypes.CSO;
-                        user.IsCSO = true;
+                    case AppRoles.Employee:
+                        user.UserType = UserType.Employee;
+                        user.IsEmployee = true;
                         break;
                     default:
                         break;
@@ -416,9 +371,9 @@ namespace SeerbitHackaton.Services
 
 
         }
-        public async Task<ResultModel<PaginatedList<UserVM>>> GetAllUsers(BaseSearchViewModel model)
+        public async Task<ResultModel<PaginatedModel<UserVM>>> GetAllUsers(QueryModel model)
         {
-            var resultModel = new ResultModel<PaginatedList<UserVM>>();
+            var resultModel = new ResultModel<PaginatedModel<UserVM>>();
             var query = GetAllUsers();
             if (query == null)
             {
@@ -427,9 +382,9 @@ namespace SeerbitHackaton.Services
             }
             if (model != null)
                 EntityFilter(query, model);
-            var usersPaged = query.ToPaginatedList((int)model.PageIndex, (int)model.PageSize);
+            var usersPaged = query.ToPagedList((int)model.PageIndex, (int)model.PageSize);
             var usersVms = usersPaged.Select(x => (UserVM)x).ToList();
-            var data = new PaginatedList<UserVM>(usersVms, (int)model.PageIndex, (int)model.PageSize, usersPaged.TotalCount);
+            var data = new PaginatedModel<UserVM>(usersVms, (int)model.PageIndex, (int)model.PageSize, usersPaged.TotalItemCount);
             resultModel.Data = data;
             resultModel.Message = $"Found {usersPaged.Count} cases";
             return resultModel;
@@ -551,9 +506,7 @@ namespace SeerbitHackaton.Services
                 return resultModel;
             }
         }
-        private async Task<DCIUser> GetUser(string emailAddress)
-            => await _userManager.FindByEmailAsync(emailAddress);
-        private async Task<DCIUser> GetUserById(string id)
+        private async Task<User> GetUserById(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
             return user;
@@ -580,12 +533,12 @@ namespace SeerbitHackaton.Services
 
             return randomNum + randomspecialChar + randomsmall + randomcapital;
         }
-        private IQueryable<DCIUser> GetAllUsers() => _context.Users.AsQueryable();
+        private IQueryable<User> GetAllUsers() => _context.Users.AsQueryable();
         private async Task<bool> SendEmail(List<string> recipients, string subject, string body)
         {
             return await _emailService.SendMail(recipients, subject, body);
         }
-        private IQueryable<User> EntityFilter(IQueryable<User> query, BaseSearchViewModel model)
+        private IQueryable<User> EntityFilter(IQueryable<User> query, QueryModel model)
         {
             if (!string.IsNullOrEmpty(model.Keyword) && !string.IsNullOrEmpty(model.Filter))
             {
@@ -594,22 +547,22 @@ namespace SeerbitHackaton.Services
                 {
                     case "email":
                         {
-                            query = query.Where(x => x.Email.ToLower().Contains(keyword)).OrderByDescending(x => x.CreatedOnUtc);
+                            query = query.Where(x => x.Email.ToLower().Contains(keyword)).OrderByDescending(x => x.CreationTime);
                             break;
                         }
                     case "firstname":
                         {
-                            query = query.Where(x => x.FirstName.ToLower().Contains(keyword)).OrderByDescending(x => x.CreatedOnUtc);
+                            query = query.Where(x => x.FirstName.ToLower().Contains(keyword)).OrderByDescending(x => x.CreationTime);
                             break;
                         }
                     case "lastname":
                         {
-                            query = query.Where(x => x.LastName.ToLower().Contains(keyword)).OrderByDescending(x => x.CreatedOnUtc);
+                            query = query.Where(x => x.LastName.ToLower().Contains(keyword)).OrderByDescending(x => x.CreationTime);
                             break;
                         }
                     case "phonenumber":
                         {
-                            query = query.Where(x => x.PhoneNumber.ToLower().Contains(keyword)).OrderByDescending(x => x.CreatedOnUtc);
+                            query = query.Where(x => x.PhoneNumber.ToLower().Contains(keyword)).OrderByDescending(x => x.CreationTime);
                             break;
                         }
                     default:
