@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using SeerbitHackaton.Core.AspnetCore;
 using SeerbitHackaton.Core.DataAccess.EfCore.Context;
 using SeerbitHackaton.Core.DataAccess.EfCore.UnitOfWork;
 using SeerbitHackaton.Core.DataAccess.Repository;
@@ -29,6 +30,7 @@ namespace SeerbitHackaton.Services
         private readonly IRepository<Employee, long> _employeeRepository;
         private readonly IRepository<Company, long> _companyRepository;
         private readonly IRepository<CompanyAdmin, long> _companyAdminRepository;
+        private readonly IHttpUserService _currentUserService;
         ILogger<EmployeeService> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
@@ -41,7 +43,8 @@ namespace SeerbitHackaton.Services
                                      IUnitOfWork unitOfWork,
                                      ILogger<EmployeeService> logger,
                                      IRepository<Company, long> companyRepository,
-                                     IRepository<CompanyAdmin, long> companyAdminRepository)
+                                     IRepository<CompanyAdmin, long> companyAdminRepository,
+                                     IHttpUserService currentUserService)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -53,6 +56,7 @@ namespace SeerbitHackaton.Services
             _unitOfWork = unitOfWork;
             _companyRepository = companyRepository;
             _companyAdminRepository = companyAdminRepository;
+            _currentUserService = currentUserService;
         }
         public async Task<ResultModel<LoginResponseVM>> LoginAsync(LoginVM model, DateTime currentDate)
         {
@@ -566,6 +570,7 @@ namespace SeerbitHackaton.Services
                 return resultModel;
             }
             return resultModel;
+            
         }
 
         public async Task<ResultModel<string>> CreateCompany(CreateCompanyRequest model)
@@ -661,6 +666,41 @@ namespace SeerbitHackaton.Services
             }
             return resultModel;
         }
+
+        public async Task<ResultModel<string>> UpdateUser(UpdateUserRequest model)
+        {
+            var resultModel = new ResultModel<string>();
+            try
+            {
+                var userId = GetCurrentUserId();
+                var user = await GetUserById(userId);
+                if (user == null)
+                {
+                    resultModel.AddError("User does not exist");
+                    return resultModel;
+                }
+                var date = Clock.Now;
+
+                user.DateOfBirth = string.IsNullOrWhiteSpace(model.DateOfBirth) ? user.DateOfBirth : Convert.ToDateTime(model.DateOfBirth);
+                user.FirstName = string.IsNullOrWhiteSpace(model.FirstName) ? user.FirstName : model.FirstName;
+                user.LastName = string.IsNullOrWhiteSpace(model.LastName) ? user.LastName : model.LastName;
+                user.MiddleName = string.IsNullOrWhiteSpace(model.MiddleName) ? user.MiddleName : model.MiddleName;
+                user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? user.PhoneNumber : model.PhoneNumber;
+                user.LastModificationTime = date;
+                await _userManager.UpdateAsync(employee.User);
+                await _unitOfWork.SaveChangesAsync();
+                resultModel.Data = "Success";
+
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.LogError($"{ex.Message ?? ex.InnerException.Message}");
+                resultModel.AddError(ex.Message);
+                return resultModel;
+            }
+            return resultModel;
+        }
         private async Task<User> GetUserById(long id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
@@ -729,5 +769,6 @@ namespace SeerbitHackaton.Services
             }
             return query.OrderByDescending(x => x.Id);
         }
+        private long GetCurrentUserId() => _currentUserService.GetCurrentUser().UserId;
     }
 }

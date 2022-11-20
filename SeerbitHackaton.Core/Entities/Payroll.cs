@@ -11,8 +11,9 @@ namespace SeerbitHackaton.Core.Entities
         public decimal AmountToBePaid { get; set; }
         public decimal AmountOfHours { get; set; }
         public Employee Employee { get; set; }
-        public long EMployeeId { get; set; }
+        public long EmployeeId { get; set; }
         public decimal AmountPerHour { get; set; }
         public long CompanyId { get; set; }
+        public bool HasBeenPaid { get; set; }
     }
 }
