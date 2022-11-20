@@ -12,6 +12,27 @@ namespace SeerbitHackaton.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Company",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Company", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Role",
                 columns: table => new
                 {
@@ -31,22 +52,6 @@ namespace SeerbitHackaton.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "States",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Capital = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StateCode = table.Column<int>(type: "int", nullable: false),
-                    Slogan = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_States", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -63,6 +68,11 @@ namespace SeerbitHackaton.Core.Migrations
                     LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserType = table.Column<int>(type: "int", nullable: false),
                     UserStatus = table.Column<int>(type: "int", nullable: false),
+                    IsSuperAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    IsCompanyAdmin = table.Column<bool>(type: "bit", nullable: false),
+                    IsEmployee = table.Column<bool>(type: "bit", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -105,21 +115,94 @@ namespace SeerbitHackaton.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lga",
+                name: "CompanyAdmins",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StateId = table.Column<long>(type: "bigint", nullable: false)
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lga", x => x.Id);
+                    table.PrimaryKey("PK_CompanyAdmins", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Lga_States_StateId",
-                        column: x => x.StateId,
-                        principalTable: "States",
+                        name: "FK_CompanyAdmins_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Company",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CompanyAdmins_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeNO = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    BankAccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Employees_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Company",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Employees_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Expires = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Revoked = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => new { x.UserId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -210,15 +293,65 @@ namespace SeerbitHackaton.Core.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Payrolls",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AmountToBePaid = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AmountOfHours = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    EMployeeId = table.Column<long>(type: "bigint", nullable: false),
+                    AmountPerHour = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CompanyId = table.Column<long>(type: "bigint", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payrolls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payrolls_Employees_EMployeeId",
+                        column: x => x.EMployeeId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "User",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreationTime", "DeletionTime", "Email", "EmailConfirmed", "FirstName", "IsDeleted", "IsFirstTimeLogin", "LastLoginDate", "LastModificationTime", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserStatus", "UserType" },
-                values: new object[] { 1L, 0, "bd458e08-f1cb-444d-a756-bcef2a5fa1d7", new DateTime(2022, 11, 19, 6, 56, 31, 628, DateTimeKind.Local).AddTicks(6132), null, "root@myschooltrack.com", true, "Super Admin", false, false, new DateTime(2022, 11, 19, 6, 56, 31, 628, DateTimeKind.Local).AddTicks(6161), null, "User", false, null, null, "ROOT@MYSCHOOLTRACK.COM", "ROOT@MYSCHOOLTRACK.COM", "AQAAAAIAAYagAAAAEArKpAVOESyNucGNCoUglEnpFpm7ZV6Yr6Jc/z0BY8K7I2+e3A64NGgJlmGGnC/O0g==", null, false, "99ae0c45-d682-4542-9ba7-1281e471916b", false, "root@myschooltrack.com", 0, 0 });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreationTime", "DateOfBirth", "DeletionTime", "Email", "EmailConfirmed", "FirstName", "Gender", "IsCompanyAdmin", "IsDeleted", "IsEmployee", "IsFirstTimeLogin", "IsSuperAdmin", "LastLoginDate", "LastModificationTime", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName", "UserStatus", "UserType" },
+                values: new object[] { 1L, 0, "7af55ae2-19e2-4a96-a827-45ca5f8d8744", new DateTime(2022, 11, 20, 11, 45, 34, 780, DateTimeKind.Local).AddTicks(4801), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "root@myschooltrack.com", true, "Super Admin", 0, false, false, false, false, false, new DateTime(2022, 11, 20, 11, 45, 34, 780, DateTimeKind.Local).AddTicks(4817), null, "User", false, null, null, "ROOT@MYSCHOOLTRACK.COM", "ROOT@MYSCHOOLTRACK.COM", "AQAAAAIAAYagAAAAEKK1YV1r840qaJeKojlLdndN1s0Yaytpee4xZh1cykoyry3QenxoNBjmiQKZ+calEw==", null, false, "99ae0c45-d682-4542-9ba7-1281e471916b", false, "root@myschooltrack.com", 0, 0 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Lga_StateId",
-                table: "Lga",
-                column: "StateId");
+                name: "IX_CompanyAdmins_CompanyId",
+                table: "CompanyAdmins",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyAdmins_UserId",
+                table: "CompanyAdmins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_CompanyId",
+                table: "Employees",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_UserId",
+                table: "Employees",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payrolls_EMployeeId",
+                table: "Payrolls",
+                column: "EMployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
@@ -264,7 +397,13 @@ namespace SeerbitHackaton.Core.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Lga");
+                name: "CompanyAdmins");
+
+            migrationBuilder.DropTable(
+                name: "Payrolls");
+
+            migrationBuilder.DropTable(
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "RoleClaim");
@@ -282,10 +421,13 @@ namespace SeerbitHackaton.Core.Migrations
                 name: "UserToken");
 
             migrationBuilder.DropTable(
-                name: "States");
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "Company");
 
             migrationBuilder.DropTable(
                 name: "User");

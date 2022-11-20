@@ -17,12 +17,33 @@ namespace SeerbitHackaton.Core.ViewModels.UserViewModel
         public string MiddleName { get; set; }
         [Required]
         public string PhoneNumber { get; set; }
-        [Required]
-        public string State { get; set; }
+        //[Required]
+        //public string State { get; set; }
         [Required]
         public Gender Gender { get; set; }
         public DateTime DateOfBirth { get; set; }
-        [Required]
         public string Role { get; set; }
     }
+
+    public class CreateEmployeeRequest : RegisterUserVM
+    {
+        public string EmployeeNO { get; set; }
+        public long UserId { get; set; }
+        public string BankAccountNumber { get; set; }
+        public string BankName { get; set; }
+        public string AccountNumber { get; set; }
+        public long CompanyId { get; set; }
+    }
+
+    public class CreateCompanyAdminRequest : RegisterUserVM
+    {
+        public long CompanyId { get; set; }
+        public long UserId { get; set; }
+    }
+    public class CreateCompanyRequest : CreateCompanyAdminRequest
+    {
+        public string Name { get; set; }
+        public string Location { get; set; }
+    }
+
 }

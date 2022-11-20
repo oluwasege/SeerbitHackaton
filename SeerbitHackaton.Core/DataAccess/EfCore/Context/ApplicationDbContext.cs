@@ -3,12 +3,12 @@ using SeerbitHackaton.Core.Entities;
 
 namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
 {
-    /// <Note>
-    /// DbSet properties are being used by generic repository
-    /// </Note>
     public class ApplicationDbContext : BaseDbContext
     {
-        public DbSet<State> States { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Company> Company { get; set; }
+        public DbSet<CompanyAdmin> CompanyAdmins { get; set; }
+        public DbSet<Payroll> Payrolls { get; set; }
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -16,7 +16,6 @@ namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.UseOpenIddict();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }

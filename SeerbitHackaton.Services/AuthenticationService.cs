@@ -2,10 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SeerbitHackaton.Core.DataAccess.EfCore.Context;
+using SeerbitHackaton.Core.DataAccess.EfCore.UnitOfWork;
+using SeerbitHackaton.Core.DataAccess.Repository;
 using SeerbitHackaton.Core.Entities;
 using SeerbitHackaton.Core.Enums;
+using SeerbitHackaton.Core.Timing;
 using SeerbitHackaton.Core.Utils;
 using Shared.Pagination;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,14 +26,20 @@ namespace SeerbitHackaton.Services
         private readonly ApplicationDbContext _context;
         private static readonly Random random = new Random();
         private readonly RoleManager<Role> _roleManager;
-        //private readonly IEmailService _emailService;
-        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, ApplicationDbContext context, RoleManager<Role> roleManager)
+        private readonly IRepository<Employee, long> _employeeRepository;
+        ILogger<EmployeeService> _logger;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
+        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, ApplicationDbContext context, RoleManager<Role> roleManager, IEmailService emailService, IRepository<Employee, long> employeeRepository, IUnitOfWork unitOfWork, ILogger<EmployeeService> logger)
         {
             _userManager = userManager;
             _configuration = configuration;
             _context = context;
             _roleManager = roleManager;
-            //_emailService = emailService;
+            _emailService = emailService;
+            _employeeRepository = employeeRepository;
+            _logger = logger;
+            _unitOfWork = unitOfWork;
         }
         public async Task<ResultModel<LoginResponseVM>> LoginAsync(LoginVM model, DateTime currentDate)
         {
@@ -279,9 +289,9 @@ namespace SeerbitHackaton.Services
                 return result;
             }
         }
-        public async Task<ResultModel<bool>> InviteUser(RegisterUserVM model)
+        public async Task<ResultModel<long>> InviteUser(RegisterUserVM model)
         {
-            var result = new ResultModel<bool>();
+            var result = new ResultModel<long>();
             try
             {
                 var existingUser = await _userManager.FindByEmailAsync(model.Email);
@@ -290,7 +300,7 @@ namespace SeerbitHackaton.Services
                 {
                     result.Message = "Account exists";
                     result.AddError("Account exists");
-                    result.Data = false;
+                    result.Data = 0;
                     return result;
                 }
 
@@ -358,7 +368,7 @@ namespace SeerbitHackaton.Services
                     result.AddError("UNABLE TO SEND MAIL");
                     return result;
                 }
-                result.Data = true;
+                result.Data = user.Id;
                 result.Message = "User Created Successfully";
 
                 return result;
@@ -506,6 +516,82 @@ namespace SeerbitHackaton.Services
                 return resultModel;
             }
         }
+
+        public async Task<ResultModel<string>> CreateEmployee(CreateEmployeeRequest model)
+        {
+            var resultModel = new ResultModel<string>();
+            try
+            {
+                var newUserId = await InviteUser(model);
+                if (newUserId.HasError)
+                {
+                    resultModel.AddError(newUserId.GetErrorMessages().First());
+                    return resultModel;
+                }
+                var date = Clock.Now;
+                var newEmployee = new Employee
+                {
+                    UserId = newUserId.Data,
+                    AccountNumber = model.AccountNumber,
+                    EmployeeNO = model.AccountNumber,
+                    CreationTime = date,
+                    BankAccountNumber = model.AccountNumber,
+                    BankName = model.BankName,
+                    CompanyId = model.CompanyId
+                };
+
+                await _employeeRepository.InsertAsync(newEmployee);
+                await _unitOfWork.SaveChangesAsync();
+                resultModel.Data = "User created";
+
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.LogError($"{ex.Message ?? ex.InnerException.Message}");
+                resultModel.AddError(ex.Message);
+                return resultModel;
+            }
+            return resultModel;
+        }
+
+        public async Task<ResultModel<string>> CreateCompany(CreateEmployeeRequest model)
+        {
+            var resultModel = new ResultModel<string>();
+            try
+            {
+                var newUserId = await InviteUser(model);
+                if (newUserId.HasError)
+                {
+                    resultModel.AddError(newUserId.GetErrorMessages().First());
+                    return resultModel;
+                }
+                var date = Clock.Now;
+                var newEmployee = new Employee
+                {
+                    UserId = newUserId.Data,
+                    AccountNumber = model.AccountNumber,
+                    EmployeeNO = model.AccountNumber,
+                    CreationTime = date,
+                    BankAccountNumber = model.AccountNumber,
+                    BankName = model.BankName,
+                    CompanyId = model.CompanyId
+                };
+
+                await _employeeRepository.InsertAsync(newEmployee);
+                await _unitOfWork.SaveChangesAsync();
+                resultModel.Data = "User created";
+
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.LogError($"{ex.Message ?? ex.InnerException.Message}");
+                resultModel.AddError(ex.Message);
+                return resultModel;
+            }
+            return resultModel;
+        }
         private async Task<User> GetUserById(long id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
@@ -536,8 +622,8 @@ namespace SeerbitHackaton.Services
         private IQueryable<User> GetAllUsers() => _context.Users.AsQueryable();
         private async Task<bool> SendEmail(List<string> recipients, string subject, string body)
         {
-            return true;
-            //return await _emailService.SendMail(recipients, subject, body);
+            //return true;
+            return await _emailService.SendMail(recipients, subject, body);
         }
         private IQueryable<User> EntityFilter(IQueryable<User> query, QueryModel model)
         {

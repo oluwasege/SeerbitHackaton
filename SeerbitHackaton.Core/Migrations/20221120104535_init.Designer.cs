@@ -12,7 +12,7 @@ using SeerbitHackaton.Core.DataAccess.EfCore.Context;
 namespace SeerbitHackaton.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221119055632_init")]
+    [Migration("20221120104535_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace SeerbitHackaton.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Lga", b =>
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Company", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,18 +33,193 @@ namespace SeerbitHackaton.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("StateId")
+                    b.HasKey("Id");
+
+                    b.ToTable("Company");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.CompanyAdmin", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StateId");
+                    b.HasIndex("CompanyId");
 
-                    b.ToTable("Lga");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CompanyAdmins");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Employee", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankAccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeNO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Payroll", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("AmountOfHours")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountPerHour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountToBePaid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("CompanyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("EMployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EMployeeId");
+
+                    b.ToTable("Payrolls");
                 });
 
             modelBuilder.Entity("SeerbitHackaton.Core.Entities.Role", b =>
@@ -113,34 +288,6 @@ namespace SeerbitHackaton.Core.Migrations
                     b.ToTable("RoleClaim", (string)null);
                 });
 
-            modelBuilder.Entity("SeerbitHackaton.Core.Entities.State", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Capital")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Slogan")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StateCode")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("States");
-                });
-
             modelBuilder.Entity("SeerbitHackaton.Core.Entities.User", b =>
                 {
                     b.Property<long>("Id")
@@ -159,6 +306,9 @@ namespace SeerbitHackaton.Core.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
@@ -174,10 +324,22 @@ namespace SeerbitHackaton.Core.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompanyAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsEmployee")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsFirstTimeLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSuperAdmin")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastLoginDate")
@@ -251,19 +413,24 @@ namespace SeerbitHackaton.Core.Migrations
                         {
                             Id = 1L,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bd458e08-f1cb-444d-a756-bcef2a5fa1d7",
-                            CreationTime = new DateTime(2022, 11, 19, 6, 56, 31, 628, DateTimeKind.Local).AddTicks(6132),
+                            ConcurrencyStamp = "7af55ae2-19e2-4a96-a827-45ca5f8d8744",
+                            CreationTime = new DateTime(2022, 11, 20, 11, 45, 34, 780, DateTimeKind.Local).AddTicks(4801),
+                            DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "root@myschooltrack.com",
                             EmailConfirmed = true,
                             FirstName = "Super Admin",
+                            Gender = 0,
+                            IsCompanyAdmin = false,
                             IsDeleted = false,
+                            IsEmployee = false,
                             IsFirstTimeLogin = false,
-                            LastLoginDate = new DateTime(2022, 11, 19, 6, 56, 31, 628, DateTimeKind.Local).AddTicks(6161),
+                            IsSuperAdmin = false,
+                            LastLoginDate = new DateTime(2022, 11, 20, 11, 45, 34, 780, DateTimeKind.Local).AddTicks(4817),
                             LastName = "User",
                             LockoutEnabled = false,
                             NormalizedEmail = "ROOT@MYSCHOOLTRACK.COM",
                             NormalizedUserName = "ROOT@MYSCHOOLTRACK.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEArKpAVOESyNucGNCoUglEnpFpm7ZV6Yr6Jc/z0BY8K7I2+e3A64NGgJlmGGnC/O0g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKK1YV1r840qaJeKojlLdndN1s0Yaytpee4xZh1cykoyry3QenxoNBjmiQKZ+calEw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "99ae0c45-d682-4542-9ba7-1281e471916b",
                             TwoFactorEnabled = false,
@@ -355,15 +522,53 @@ namespace SeerbitHackaton.Core.Migrations
                     b.ToTable("UserToken", (string)null);
                 });
 
-            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Lga", b =>
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.CompanyAdmin", b =>
                 {
-                    b.HasOne("SeerbitHackaton.Core.Entities.State", "State")
-                        .WithMany("Lgas")
-                        .HasForeignKey("StateId")
+                    b.HasOne("SeerbitHackaton.Core.Entities.Company", "Company")
+                        .WithMany("CompanyAdmins")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("State");
+                    b.HasOne("SeerbitHackaton.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Employee", b =>
+                {
+                    b.HasOne("SeerbitHackaton.Core.Entities.Company", "Company")
+                        .WithMany("Employees")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SeerbitHackaton.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Payroll", b =>
+                {
+                    b.HasOne("SeerbitHackaton.Core.Entities.Employee", "Employee")
+                        .WithMany("Payroll")
+                        .HasForeignKey("EMployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("SeerbitHackaton.Core.Entities.RoleClaim", b =>
@@ -373,6 +578,43 @@ namespace SeerbitHackaton.Core.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.User", b =>
+                {
+                    b.OwnsMany("SeerbitHackaton.Core.Entities.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<long>("UserId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<DateTime>("Created")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("Expires")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("Revoked")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Token")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("UserId", "Id");
+
+                            b1.ToTable("RefreshToken");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("SeerbitHackaton.Core.Entities.UserClaim", b =>
@@ -417,9 +659,16 @@ namespace SeerbitHackaton.Core.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SeerbitHackaton.Core.Entities.State", b =>
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Company", b =>
                 {
-                    b.Navigation("Lgas");
+                    b.Navigation("CompanyAdmins");
+
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("SeerbitHackaton.Core.Entities.Employee", b =>
+                {
+                    b.Navigation("Payroll");
                 });
 #pragma warning restore 612, 618
         }
