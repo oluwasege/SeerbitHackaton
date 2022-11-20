@@ -462,7 +462,7 @@ namespace SeerbitHackaton.Services
                 return result;
             }
         }
-        public async Task<ResultModel<bool>> ResetPassword(ResetPasswordVM model, string userId, DateTime currentDate)
+        public async Task<ResultModel<bool>> ResetPassword(ResetPasswordVM model, long userId, DateTime currentDate)
         {
             var resultModel = new ResultModel<bool>();
 
@@ -471,7 +471,7 @@ namespace SeerbitHackaton.Services
                 var user = await GetUserById(userId);
                 if (user == null)
                 {
-                    resultModel.AddError(ErrorConstants.IncorrectUserOrPass);
+                    resultModel.AddError("Incorrect username or password");
                     return resultModel;
                 };
 
@@ -482,8 +482,8 @@ namespace SeerbitHackaton.Services
                 }
 
 
-                user.PasswordHash = new PasswordHasher<DCIUser>().HashPassword(user, model.Password);
-                user.LastModifiedDate = currentDate;
+                user.PasswordHash = new PasswordHasher<User>().HashPassword(user, model.Password);
+                user.LastLoginDate = currentDate;
                 var resetResult = await _userManager.UpdateAsync(user);
 
                 if (!resetResult.Succeeded)
@@ -506,7 +506,7 @@ namespace SeerbitHackaton.Services
                 return resultModel;
             }
         }
-        private async Task<User> GetUserById(string id)
+        private async Task<User> GetUserById(long id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
             return user;
@@ -536,7 +536,7 @@ namespace SeerbitHackaton.Services
         private IQueryable<User> GetAllUsers() => _context.Users.AsQueryable();
         private async Task<bool> SendEmail(List<string> recipients, string subject, string body)
         {
-            return await _emailService.SendMail(recipients, subject, body);
+            //return await _emailService.SendMail(recipients, subject, body);
         }
         private IQueryable<User> EntityFilter(IQueryable<User> query, QueryModel model)
         {
