@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SeerbitHackaton.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CompanyAdminController : BaseController
     {
@@ -16,7 +16,7 @@ namespace SeerbitHackaton.API.Controllers
         [HttpPost]
         [Authorize(Roles = AppRoles.CompanyAdmin)]
         [ProducesResponseType(typeof(ApiResponse<CompanyAdminResponse>), 200)]
-        public async Task<IActionResult> GetEmployee()
+        public async Task<IActionResult> GetCompanyAdmin()
         {
 
             try
