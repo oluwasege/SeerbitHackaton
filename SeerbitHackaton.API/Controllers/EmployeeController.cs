@@ -62,7 +62,7 @@ namespace SeerbitHackaton.API.Controllers
         [HttpGet()]
         [Authorize(Roles = AppRoles.CompanyAdmin)]
         [ProducesResponseType(typeof(ApiResponse<PaginatedModel<EmployeeResponse>>), 200)]
-        public async Task<IActionResult> GetAllEmployeesForCompanyAdmin([FromQuery] long? companyId, QueryModel model)
+        public async Task<IActionResult> GetAllEmployeesForCompanyAdmin([FromQuery] long? companyId, [FromQuery]QueryModel model)
         {
             var result = await _employeeService.GetAllEmployees(companyId, model, false);
 
@@ -76,7 +76,7 @@ namespace SeerbitHackaton.API.Controllers
         [HttpGet()]
         [Authorize(Roles = AppRoles.SuperAdmin)]
         [ProducesResponseType(typeof(ApiResponse<PaginatedModel<EmployeeResponse>>), 200)]
-        public async Task<IActionResult> GetAllEmployeesForSuperAdmin([FromQuery] long? companyId, QueryModel model)
+        public async Task<IActionResult> GetAllEmployeesForSuperAdmin([FromQuery] long? companyId, [FromQuery] QueryModel model)
         {
             var result = await _employeeService.GetAllEmployees(companyId, model, true);
 

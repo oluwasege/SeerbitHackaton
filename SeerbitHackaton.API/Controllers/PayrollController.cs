@@ -46,9 +46,9 @@ namespace SeerbitHackaton.API.Controllers
         [HttpGet()]
         [Authorize(Roles = AppRoles.Employee)]
         [ProducesResponseType(typeof(ApiResponse<PaginatedModel<PayrollResponse>>), 200)]
-        public async Task<IActionResult> GetAllPayrollForEmployee([FromQuery] long? employeeId, [FromQuery] long? companyId, QueryModel model)
+        public async Task<IActionResult> GetAllPayrollForEmployee([FromQuery] long? employeeId, [FromQuery] long? companyId, [FromQuery] QueryModel model)
         {
-            var result = await _payrollService.GetAllPayrolls(employeeId, companyId,model, false);
+            var result = await _payrollService.GetAllPayrolls(employeeId, companyId, model, false);
 
             if (result.HasError)
                 return ApiResponse<string>(errors: result.ErrorMessages.ToArray());
@@ -59,7 +59,7 @@ namespace SeerbitHackaton.API.Controllers
         [HttpGet()]
         [Authorize(Roles = AppRoles.CompanyAdmin)]
         [ProducesResponseType(typeof(ApiResponse<PaginatedModel<PayrollResponse>>), 200)]
-        public async Task<IActionResult> GetAllPayrollForCompanyAdmin([FromQuery] long? employeeId, [FromQuery] long? companyId, QueryModel model)
+        public async Task<IActionResult> GetAllPayrollForCompanyAdmin([FromQuery] long? employeeId, [FromQuery] long? companyId, [FromQuery] QueryModel model)
         {
             var result = await _payrollService.GetAllPayrolls(employeeId, companyId, model, false);
 
