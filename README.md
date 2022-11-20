@@ -2,6 +2,7 @@
 
 This project is my submission for the Seerbit Future of Payment Hackathon.
 
+Here is a link to the Swagger Documentation - <a href=http://ertyuhack-001-site1.itempurl.com/swagger/index.html>Documentation</a>
 
 Seeded User Details
 
