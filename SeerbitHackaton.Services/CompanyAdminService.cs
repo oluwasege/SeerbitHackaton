@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SeerbitHackaton.Services
 {
-    public class CompanyAdminService
+    public class CompanyAdminService:ICompanyAdminServices
     {
         private readonly IRepository<CompanyAdmin, long> _companyAdminRepository;
         private readonly IRepository<Company, long> _companyRepository;

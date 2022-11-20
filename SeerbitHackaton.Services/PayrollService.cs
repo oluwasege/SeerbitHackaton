@@ -9,7 +9,7 @@ using SeerbitHackaton.Core.Timing;
 
 namespace SeerbitHackaton.Services
 {
-    public class PayrollService
+    public class PayrollService:IPayrollService
     {
         private readonly IRepository<CompanyAdmin, long> _companyAdminRepository;
         private readonly IRepository<Company, long> _companyRepository;

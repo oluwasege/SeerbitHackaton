@@ -10,7 +10,7 @@ using Shared.Pagination;
 
 namespace SeerbitHackaton.Services
 {
-    public class EmployeeService
+    public class EmployeeService:IEmployeeService
     {
         private readonly IRepository<Employee, long> _employeeRepository;
         private readonly IRepository<Company, long> _companyRepository;

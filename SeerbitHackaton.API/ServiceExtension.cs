@@ -16,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using System;
 using SeerbitHackaton.Services.Interfaces;
 using SeerbitHackaton.Services;
+using SeerBitDotNetAPILibrary.Service;
 
 namespace SeerbitHackaton.API
 {
@@ -122,7 +123,9 @@ namespace SeerbitHackaton.API
                           HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath"))));
 
             services.AddScoped<IFileStorageService, FileStorageService>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
+            services.AddScoped<IPaymentMethod, PaymentMethodService>();
+            services.AddScoped<IEmailService, EmailService>();
         }
 
     }
