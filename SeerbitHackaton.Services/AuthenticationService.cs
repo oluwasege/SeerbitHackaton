@@ -27,10 +27,21 @@ namespace SeerbitHackaton.Services
         private static readonly Random random = new Random();
         private readonly RoleManager<Role> _roleManager;
         private readonly IRepository<Employee, long> _employeeRepository;
+        private readonly IRepository<Company, long> _companyRepository;
+        private readonly IRepository<CompanyAdmin, long> _companyAdminRepository;
         ILogger<EmployeeService> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
-        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, ApplicationDbContext context, RoleManager<Role> roleManager, IEmailService emailService, IRepository<Employee, long> employeeRepository, IUnitOfWork unitOfWork, ILogger<EmployeeService> logger)
+        public AuthenticationService(UserManager<User> userManager,
+                                     IConfiguration configuration,
+                                     ApplicationDbContext context,
+                                     RoleManager<Role> roleManager,
+                                     IEmailService emailService,
+                                     IRepository<Employee, long> employeeRepository,
+                                     IUnitOfWork unitOfWork,
+                                     ILogger<EmployeeService> logger,
+                                     IRepository<Company, long> companyRepository,
+                                     IRepository<CompanyAdmin, long> companyAdminRepository)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -40,6 +51,8 @@ namespace SeerbitHackaton.Services
             _employeeRepository = employeeRepository;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _companyRepository = companyRepository;
+            _companyAdminRepository = companyAdminRepository;
         }
         public async Task<ResultModel<LoginResponseVM>> LoginAsync(LoginVM model, DateTime currentDate)
         {
@@ -555,30 +568,86 @@ namespace SeerbitHackaton.Services
             return resultModel;
         }
 
-        public async Task<ResultModel<string>> CreateCompany(CreateEmployeeRequest model)
+        public async Task<ResultModel<string>> CreateCompany(CreateCompanyRequest model)
         {
             var resultModel = new ResultModel<string>();
             try
             {
+
+                var companyExists = _companyRepository.GetAll().Where(x => x.Name == model.Name);
+                if (companyExists != null)
+                {
+                    resultModel.AddError("Company exists");
+                    return resultModel;
+                }
+                var date = Clock.Now;
+                var newCompany = new Company
+                {
+                    Name = model.Name,
+                    CAC = model.CAC,
+                    Location = model.Location,
+                    CreationTime = date
+                };
+
+                var companyId = await _companyRepository.InsertAndGetIdAsync(newCompany);
                 var newUserId = await InviteUser(model);
                 if (newUserId.HasError)
                 {
                     resultModel.AddError(newUserId.GetErrorMessages().First());
                     return resultModel;
                 }
-                var date = Clock.Now;
-                var newEmployee = new Employee
+                var companyAdmin = new CompanyAdmin
                 {
                     UserId = newUserId.Data,
-                    AccountNumber = model.AccountNumber,
-                    EmployeeNO = model.AccountNumber,
-                    CreationTime = date,
-                    BankAccountNumber = model.AccountNumber,
-                    BankName = model.BankName,
-                    CompanyId = model.CompanyId
+                    CompanyId = companyId,
+                    CreationTime = date
                 };
+                //var companyAdminId = await _companyAdminRepository.InsertAndGetIdAsync(companyAdmin);
+                newCompany.CompanyAdmins.Add(companyAdmin);
 
-                await _employeeRepository.InsertAsync(newEmployee);
+                await _companyRepository.UpdateAsync(newCompany);
+                await _unitOfWork.SaveChangesAsync();
+                resultModel.Data = "User created";
+
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                _logger.LogError($"{ex.Message ?? ex.InnerException.Message}");
+                resultModel.AddError(ex.Message);
+                return resultModel;
+            }
+            return resultModel;
+        }
+
+        public async Task<ResultModel<string>> CreateCompanyAdmin(CreateCompanyAdminRequest model)
+        {
+            var resultModel = new ResultModel<string>();
+            try
+            {
+
+                var companyExists = _companyRepository.Get(model.CompanyId);
+                if (companyExists == null)
+                {
+                    resultModel.AddError("Company does not exists");
+                    return resultModel;
+                }
+                var date = Clock.Now;
+                var newUserId = await InviteUser(model);
+                if (newUserId.HasError)
+                {
+                    resultModel.AddError(newUserId.GetErrorMessages().First());
+                    return resultModel;
+                }
+                var companyAdmin = new CompanyAdmin
+                {
+                    UserId = newUserId.Data,
+                    CompanyId = companyExists.Id,
+                    CreationTime = date
+                };
+                companyExists.CompanyAdmins.Add(companyAdmin);
+
+                await _companyRepository.UpdateAsync(companyExists);
                 await _unitOfWork.SaveChangesAsync();
                 resultModel.Data = "User created";
 

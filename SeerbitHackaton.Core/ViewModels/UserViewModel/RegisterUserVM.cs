@@ -44,6 +44,7 @@ namespace SeerbitHackaton.Core.ViewModels.UserViewModel
     {
         public string Name { get; set; }
         public string Location { get; set; }
+        public string CAC { get; set; }
     }
 
 }

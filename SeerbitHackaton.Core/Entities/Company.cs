@@ -12,5 +12,6 @@ namespace SeerbitHackaton.Core.Entities
         public string Location { get; set; }
         public virtual List<CompanyAdmin> CompanyAdmins { get; set; }
         public List<Employee> Employees { get; set; }
+        public string CAC { get; set; }
     }
 }
