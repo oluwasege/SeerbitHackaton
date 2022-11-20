@@ -2,7 +2,7 @@
 
 This project is my submission for the Seerbit Future of Payment Hackathon.
 
-Here is a link to the Swagger Documentation - <a href=http://ertyuhack-001-site1.itempurl.com/swagger/index.html>Documentation</a>
+Here is a link to the Documentation - <a href="http://ertyuhack-001-site1.itempurl.com/swagger/index.html" target="_blank">Swagger Documentation</a> , <a href="https://documenter.getpostman.com/view/11348977/2s8YmSsLe8" target="_blank">Postman Documentation</a>
 
 Seeded User Details
 
