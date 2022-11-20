@@ -14,7 +14,7 @@ namespace SeerbitHackaton.Services.Interfaces
     {
         Task<ResultModel<EmployeeResponse>> GetEmployee();
 
-        Task<ResultModel<PaginatedModel<EmployeeResponse>>> GetAllEmployees(long companyId, QueryModel model, bool isSuperAdmin);
+        Task<ResultModel<PaginatedModel<EmployeeResponse>>> GetAllEmployees(long? companyId, QueryModel model, bool isSuperAdmin);
 
         Task<ResultModel<string>> UpdateEmployee(UpdateEmployeeRequest model);
     }

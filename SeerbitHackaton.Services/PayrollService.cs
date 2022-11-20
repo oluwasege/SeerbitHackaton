@@ -6,6 +6,7 @@ using SeerbitHackaton.Core.DataAccess.EfCore.UnitOfWork;
 using SeerbitHackaton.Core.DataAccess.Repository;
 using SeerbitHackaton.Core.Entities;
 using SeerbitHackaton.Core.Timing;
+using Shared.Pagination;
 
 namespace SeerbitHackaton.Services
 {
@@ -115,6 +116,31 @@ namespace SeerbitHackaton.Services
                 resultModel.AddError(ex.Message);
                 return resultModel;
             }
+            return resultModel;
+        }
+
+        public async Task<ResultModel<PaginatedModel<PayrollResponse>>> GetAllPayrolls(long? employeeId, long? companyId,QueryModel model, bool isCompanyAdmin)
+        {
+            var resultModel = new ResultModel<PaginatedModel<PayrollResponse>>();
+            try
+            {
+                var query = _payrollRepository.GetAllIncluding(x => x.Employee);
+                if (isCompanyAdmin == false)
+                    query = query.Where(x => x.EmployeeId == employeeId);
+                if(isCompanyAdmin== true)
+                    query=query.Where(x=>x.CompanyId== companyId);
+                var employees = await query.ToPagedListAsync(model.PageIndex, model.PageSize);
+                var pagedPayrollss = employees.Select(x => (PayrollResponse)x).ToList();
+                var data = new PaginatedModel<PayrollResponse>(pagedPayrollss, model.PageIndex, model.PageSize, query.Count());
+                resultModel.Data = data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message ?? ex.InnerException.Message}");
+                resultModel.AddError(ex.Message);
+                return resultModel;
+            }
+
             return resultModel;
         }
 

@@ -1,4 +1,6 @@
 ﻿
+global using System.ComponentModel.DataAnnotations;
+
 namespace SeerbitHackaton.Core.ViewModels
 {
     public class ResultModel<T>

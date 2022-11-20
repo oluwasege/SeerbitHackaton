@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Pagination;
 
 namespace SeerbitHackaton.API.Controllers
 {
@@ -19,6 +20,8 @@ namespace SeerbitHackaton.API.Controllers
         public async Task<IActionResult> UpdateEmployeeInformation([FromBody] UpdateEmployeeRequest model)
         {
 
+            if (!ModelState.IsValid)
+                return ApiResponse<ResultModel<string>>(errors: ListModelErrors.ToArray(), codes: ApiResponseCodes.INVALID_REQUEST);
             try
             {
                 var result = await _employeeService.UpdateEmployee(model);
@@ -26,7 +29,7 @@ namespace SeerbitHackaton.API.Controllers
                 if (!result.HasError)
                     return ApiResponse(result.Data, message: result.Message, ApiResponseCodes.OK);
 
-                return ApiResponse<LoginResponseVM>(null, message: result.Message, ApiResponseCodes.FAILED, errors: result.GetErrorMessages().ToArray());
+                return ApiResponse<string>(null, message: result.Message, ApiResponseCodes.FAILED, errors: result.GetErrorMessages().ToArray());
             }
             catch (Exception ex)
             {
@@ -47,12 +50,41 @@ namespace SeerbitHackaton.API.Controllers
                 if (!result.HasError)
                     return ApiResponse(result.Data, message: result.Message, ApiResponseCodes.OK);
 
-                return ApiResponse<LoginResponseVM>(null, message: result.Message, ApiResponseCodes.FAILED, errors: result.GetErrorMessages().ToArray());
+                return ApiResponse<EmployeeResponse>(null, message: result.Message, ApiResponseCodes.FAILED, errors: result.GetErrorMessages().ToArray());
             }
             catch (Exception ex)
             {
                 return HandleError(ex);
             }
         }
+
+
+        [HttpGet()]
+        [Authorize(Roles = AppRoles.CompanyAdmin)]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedModel<EmployeeResponse>>), 200)]
+        public async Task<IActionResult> GetAllEmployeesForCompanyAdmin([FromQuery] long? companyId, QueryModel model)
+        {
+            var result = await _employeeService.GetAllEmployees(companyId, model, false);
+
+            if (result.HasError)
+                return ApiResponse<string>(errors: result.ErrorMessages.ToArray());
+
+            return ApiResponse(message: result.Message, codes: ApiResponseCodes.OK, data: result.Data, totalCount: result.Data.TotalItemCount);
+        }
+
+
+        [HttpGet()]
+        [Authorize(Roles = AppRoles.SuperAdmin)]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedModel<EmployeeResponse>>), 200)]
+        public async Task<IActionResult> GetAllEmployeesForSuperAdmin([FromQuery] long? companyId, QueryModel model)
+        {
+            var result = await _employeeService.GetAllEmployees(companyId, model, true);
+
+            if (result.HasError)
+                return ApiResponse<string>(errors: result.ErrorMessages.ToArray());
+
+            return ApiResponse(message: result.Message, codes: ApiResponseCodes.OK, data: result.Data, totalCount: result.Data.TotalItemCount);
+        }
+
     }
 }

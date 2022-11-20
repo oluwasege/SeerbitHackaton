@@ -51,7 +51,7 @@ namespace SeerbitHackaton.Services
             return resultModel;
         }
 
-        public async Task<ResultModel<PaginatedModel<EmployeeResponse>>> GetAllEmployees(long companyId, QueryModel model, bool isSuperAdmin)
+        public async Task<ResultModel<PaginatedModel<EmployeeResponse>>> GetAllEmployees(long? companyId, QueryModel model, bool isSuperAdmin)
         {
             var resultModel = new ResultModel<PaginatedModel<EmployeeResponse>>();
             try
