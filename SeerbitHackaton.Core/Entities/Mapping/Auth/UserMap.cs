@@ -101,7 +101,7 @@ namespace Shared.Entities.Mapping
                 UserType = UserType.CompanyAdmin
             };
 
-            var users = new List<User>() { employee,companyAdmin,superAdmin };
+            var users = new List<User>() { companyAdmin,superAdmin,employee,employee2 };
 
             builder.HasData(users);
         }
