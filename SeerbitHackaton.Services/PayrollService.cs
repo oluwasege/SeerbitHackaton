@@ -80,7 +80,7 @@ namespace SeerbitHackaton.Services
                             resultModel.AddError("Invalid file");
                             return resultModel;
                         }
-                        var payrolls=new List<Payroll>();
+                        var payrolls = new List<Payroll>();
                         for (var row = 3; row < validRow; row++)
                         {
                             var employeeNo = worksheet.Cells[row, 3].Value?.ToString().Trim();
@@ -98,11 +98,12 @@ namespace SeerbitHackaton.Services
                                 };
 
                                 payroll.AmountToBePaid = payroll.AmountOfHours * payroll.AmountPerHour;
-                                payrolls.Add(payroll);
+                                _payrollRepository.Insert(payroll);
                             }
                         }
 
-
+                        await _unitOfWork.SaveChangesAsync();
+                        resultModel.Data = "Success";
                     }
                 }
             }

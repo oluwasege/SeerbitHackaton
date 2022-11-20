@@ -687,7 +687,7 @@ namespace SeerbitHackaton.Services
                 user.MiddleName = string.IsNullOrWhiteSpace(model.MiddleName) ? user.MiddleName : model.MiddleName;
                 user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? user.PhoneNumber : model.PhoneNumber;
                 user.LastModificationTime = date;
-                await _userManager.UpdateAsync(employee.User);
+                await _userManager.UpdateAsync(user);
                 await _unitOfWork.SaveChangesAsync();
                 resultModel.Data = "Success";
 

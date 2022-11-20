@@ -58,7 +58,7 @@ namespace SeerbitHackaton.API.Controllers
 
             try
             {
-                var result = await _authService.ResetPassword(model, CurrentUser, Clock.Now);
+                var result = await _authService.ResetPassword(model, CurrentUser.UserId, Clock.Now);
 
                 if (!result.HasError)
                     return ApiResponse(result.Data, message: result.Message, ApiResponseCodes.OK);
