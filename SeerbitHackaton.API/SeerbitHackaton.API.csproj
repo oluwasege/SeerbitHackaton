@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SeerbitDotnet\SeerBitLibrary\SeerBitDotNetAPILibrary.csproj" />
     <ProjectReference Include="..\SeerbitHackaton.Core\SeerbitHackaton.Core.csproj" />
     <ProjectReference Include="..\SeerbitHackaton.Services\SeerbitHackaton.Services.csproj" />
   </ItemGroup>

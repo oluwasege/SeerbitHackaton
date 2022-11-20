@@ -2,21 +2,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SeerbitHackaton.Core.AspnetCore;
 using SeerbitHackaton.Core.DataAccess.EfCore;
 using SeerbitHackaton.Core.DataAccess.EfCore.Context;
 using SeerbitHackaton.Core.DataAccess.EfCore.UnitOfWork;
 using SeerbitHackaton.Core.Entities;
 using SeerbitHackaton.Core.FileStorage;
 using SeerbitHackaton.Core.Utils;
-using System.Configuration;
 using System.Text;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
-using System;
-using SeerbitHackaton.Services.Interfaces;
 using SeerbitHackaton.Services;
-using SeerBitDotNetAPILibrary.Service;
 
 namespace SeerbitHackaton.API
 {
