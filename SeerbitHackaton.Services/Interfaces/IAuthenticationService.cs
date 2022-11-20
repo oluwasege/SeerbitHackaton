@@ -1,5 +1,9 @@
 ﻿global using SeerbitHackaton.Core.ViewModels;
 global using SeerbitHackaton.Core.ViewModels.UserViewModel;
+using Microsoft.AspNetCore.Identity;
+using SeerbitHackaton.Core.DataAccess.EfCore.UnitOfWork;
+using SeerbitHackaton.Core.Entities;
+using SeerbitHackaton.Core.Timing;
 using Shared.Pagination;
 
 namespace SeerbitHackaton.Services.Interfaces
@@ -15,5 +19,13 @@ namespace SeerbitHackaton.Services.Interfaces
         Task<ResultModel<string>> AssignUserToRole(string email, string role, string CurrentUserID);
         Task<ResultModel<List<RoleVm>>> GetAllRoles();
         Task<ResultModel<bool>> ResetPassword(ResetPasswordVM model, long userId, DateTime currentDate);
+
+        Task<ResultModel<string>> CreateEmployee(CreateEmployeeRequest model);
+
+        Task<ResultModel<string>> CreateCompany(CreateCompanyRequest model);
+
+        Task<ResultModel<string>> CreateCompanyAdmin(CreateCompanyAdminRequest model);
+
+        Task<ResultModel<string>> UpdateUser(UpdateUserRequest model);
     }
 }

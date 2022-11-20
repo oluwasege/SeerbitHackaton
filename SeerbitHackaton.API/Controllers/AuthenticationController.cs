@@ -43,6 +43,26 @@ namespace SeerbitHackaton.API.Controllers
             }
         }
 
+        [HttpPost]
+        [ProducesResponseType(typeof(ApiResponse<LoginResponseVM>), 200)]
+        public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeRequest model)
+        {
+
+            try
+            {
+                var result = await _authService.CreateEmployee(model);
+
+                if (!result.HasError)
+                    return ApiResponse(result.Data, message: result.Message, ApiResponseCodes.OK);
+
+                return ApiResponse<LoginResponseVM>(null, message: result.Message, ApiResponseCodes.FAILED, errors: result.GetErrorMessages().ToArray());
+            }
+            catch (Exception ex)
+            {
+                return HandleError(ex);
+            }
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Get()

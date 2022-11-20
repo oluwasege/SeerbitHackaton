@@ -124,8 +124,10 @@ namespace SeerbitHackaton.API
 
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
-            services.AddScoped<IPaymentMethod, PaymentMethodService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPayrollService, PayrollService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<ICompanyAdminServices, CompanyAdminService>();
         }
 
     }
