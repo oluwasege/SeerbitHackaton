@@ -536,6 +536,7 @@ namespace SeerbitHackaton.Services
         private IQueryable<User> GetAllUsers() => _context.Users.AsQueryable();
         private async Task<bool> SendEmail(List<string> recipients, string subject, string body)
         {
+            return true;
             //return await _emailService.SendMail(recipients, subject, body);
         }
         private IQueryable<User> EntityFilter(IQueryable<User> query, QueryModel model)

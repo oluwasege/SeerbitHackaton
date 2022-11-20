@@ -20,22 +20,4 @@ namespace SeerbitHackaton.Core.DataAccess.EfCore.Context
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
-
-    /// <summary>
-    /// Migration only
-    /// </summary>
-    /*public class AppDbContextMigrationFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
-    {
-        public static readonly IConfigurationRoot ConfigBuilder = new ConfigurationBuilder()
-                 .SetBasePath(AppContext.BaseDirectory)
-                 .AddJsonFile("appsettings.json", true, true)
-                 .AddJsonFile("appsettings.Development.json", false).Build();
-
-        public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            return new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
-                                   .UseSqlServer(ConfigBuilder.GetConnectionString("Default"), b => b.MigrationsAssembly(GetType().Assembly.FullName))
-                                   .Options);
-        }
-    }*/
 }
