@@ -111,12 +111,12 @@ namespace SeerbitHackaton.API
             services.AddScoped<IHttpUserService, HttpUserService>();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
-            Directory.CreateDirectory(Path.Combine(HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath")));
+            //Directory.CreateDirectory(Path.Combine(HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath")));
 
-            services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(
-                          HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath"))));
+            //services.AddSingleton<IFileProvider>(new PhysicalFileProvider(Path.Combine(
+            //              HostingEnvironment.ContentRootPath, Configuration.GetValue<string>("StoragePath"))));
 
-            services.AddScoped<IFileStorageService, FileStorageService>();
+            //services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPayrollService, PayrollService>();
